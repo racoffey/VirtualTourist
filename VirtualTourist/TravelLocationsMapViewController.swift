@@ -11,7 +11,7 @@ import Foundation
 import UIKit
 import MapKit
 
-class MapViewController: UIViewController {
+class TravelLocationsMapViewController: UIViewController {
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -22,6 +22,10 @@ class MapViewController: UIViewController {
         
         mapView.delegate = self
         activityIndicator.hidden = false
+        
+        let gestureRecognizer = UILongPressGestureRecognizer(target: self, action:#selector(TravelLocationsMapViewController.handleTap(_:)))
+        gestureRecognizer.delegate = self
+        mapView.addGestureRecognizer(gestureRecognizer)
     }
     
     override func didReceiveMemoryWarning() {
@@ -32,7 +36,7 @@ class MapViewController: UIViewController {
 }
 
 
-extension MapViewController: MKMapViewDelegate, UIGestureRecognizerDelegate {
+extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecognizerDelegate {
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
@@ -58,8 +62,8 @@ extension MapViewController: MKMapViewDelegate, UIGestureRecognizerDelegate {
     }
     
     //If call out it tapped then open URL link in Student Location
-    func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!,
-                 calloutAccessoryControlTapped control: UIControl!) {
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView,
+                 calloutAccessoryControlTapped control: UIControl) {
         //let annotation = view.annotation
         print("Call out was pressed")
         print("URL =  \(view.annotation?.subtitle)")
