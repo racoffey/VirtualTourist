@@ -1,8 +1,8 @@
 //
-//  PinViewController.swift
+//  PhotoAlbumViewController.swift
 //  VirtualTourist
 //
-//  Created by Robert Coffey on 06/07/2016.
+//  Created by Robert Coffey on 16/07/2016.
 //  Copyright © 2016 Robert Coffey. All rights reserved.
 //
 
@@ -10,47 +10,41 @@ import Foundation
 import UIKit
 import CoreData
 
-class PinsViewController: CoreDataTableViewController {
+class PhotoAlbumViewController: CoreDataTableViewController {
     
+    let pin : Pin? = nil
     
-    @IBAction func addNewPin(sender: AnyObject) {
-        
-        // Create a new notebook... and Core Data takes care of the rest!
-        let pin = Pin(name: "New Pin", latitude: 0, longitude: 0,
-                          context: fetchedResultsController!.managedObjectContext)
-        print("Just created a pin: \(pin)")
-        
-        
-    }
-    
+    /*
+     @IBAction func addNewNotebook(sender: AnyObject) {
+     
+     // Create a new notebook... and Core Data takes care of the rest!
+     let nb = Notebook(name: "New Notebook",
+     context: fetchedResultsController!.managedObjectContext)
+     print("Just created a notebook: \(nb)")
+     
+     
+     }
+     */
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        
         // Set the title
-        title = "PinViewController"
+        title = "Photo Album"
         
         // Get the stack
         let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let stack = delegate.stack
         
         // Create a fetchrequest
-        let fr = NSFetchRequest(entityName: "Pin")
-        fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true),
-                              NSSortDescriptor(key: "creationDate", ascending: false)]
+        let fr = NSFetchRequest(entityName: "Photo")
+        fr.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true),
+                              NSSortDescriptor(key: "date_Taken", ascending: false)]
         
         // Create the FetchedResultsController
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                                               managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
         
-        let number = fetchedResultsController?.fetchedObjects?.count
-        print("Fetched results = \(number)")
         
- /*       FlickrClient.sharedInstance().getPhotos((fetchedResultsController?.managedObjectContext)!) { (success, errorString) in
-            
-        }
-  */
         
     }
     
@@ -70,16 +64,17 @@ class PinsViewController: CoreDataTableViewController {
         
         
         // Find the right notebook for this indexpath
-        let pin = fetchedResultsController!.objectAtIndexPath(indexPath) as! Pin
+        let photo = fetchedResultsController!.objectAtIndexPath(indexPath) as! Photo
         
         
         
         // Create the cell
-        let cell = tableView.dequeueReusableCellWithIdentifier("PinCell", forIndexPath: indexPath)
+        let cell = tableView.dequeueReusableCellWithIdentifier("PhotoCell", forIndexPath: indexPath)
         
         // Sync notebook -> cell
-        cell.textLabel?.text = pin.name
-        cell.detailTextLabel?.text = String(format: "%d photos", pin.photos!.count)
+        cell.textLabel?.text = photo.title
+       // cell.imageView?.image = NSURL
+        //cell.detailTextLabel?.text = String(format: "%d url_m", .notes!.count)
         
         
         return cell
@@ -89,38 +84,38 @@ class PinsViewController: CoreDataTableViewController {
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         
         if let context = fetchedResultsController?.managedObjectContext,
-            pin = fetchedResultsController?.objectAtIndexPath(indexPath) as? Pin
+            photo = fetchedResultsController?.objectAtIndexPath(indexPath) as? Photo
             where editingStyle == .Delete{
             
-            context.deleteObject(pin)
+            context.deleteObject(photo)
             
         }
         
     }
     // MARK: - Navigation
-    
+/*
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
-        print("Reached prepare for Segue")
-        if segue.identifier! == "displayPhotos"{
+        
+        if segue.identifier! == "displayPhoto"{
             
-            if let photosVC = segue.destinationViewController as? PhotosViewController{
+            if let notesVC = segue.destinationViewController as? PhotoViewController{
                 
                 // Create Fetch Request
-                let fr = NSFetchRequest(entityName: "Photo")
+                let fr = NSFetchRequest(entityName: "Note")
                 
-                fr.sortDescriptors = [NSSortDescriptor(key: "date_taken", ascending: false),
-                                      NSSortDescriptor(key: "title", ascending: true)]
+                fr.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false),
+                                      NSSortDescriptor(key: "text", ascending: true)]
                 
                 // So far we have a search that will match ALL notes. However, we're
                 // only interested in those within the current notebook:
                 // NSPredicate to the rescue!
                 let indexPath = tableView.indexPathForSelectedRow!
-                let pin = fetchedResultsController?.objectAtIndexPath(indexPath) as? Pin
+                let notebook = fetchedResultsController?.objectAtIndexPath(indexPath) as? Notebook
                 
-                let pred = NSPredicate(format: "pin = %@", argumentArray: [pin!])
+                let pred = NSPredicate(format: "notebook = %@", argumentArray: [notebook!])
                 
                 fr.predicate = pred
                 
@@ -131,16 +126,15 @@ class PinsViewController: CoreDataTableViewController {
                                                     cacheName: nil)
                 
                 // Inject it into the notesVC
-                photosVC.fetchedResultsController = fc
+                notesVC.fetchedResultsController = fc
                 
                 // Inject the notebook too!
-                photosVC.pin = pin
+                notesVC.notebook = notebook
                 
             }
         }
-        
-/*        if segue.identifier! == "segueToMap" {
-            let 
-        }*/
-    }
+    }*/
+
 }
+
+

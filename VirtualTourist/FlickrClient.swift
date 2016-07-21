@@ -39,11 +39,8 @@ class FlickrClient : NSObject {
     
     
     // Get a number of the last student locations
-    func getPhotos(context: NSManagedObjectContext, completionHandlerForSession: (success: Bool, errorString: String?) -> Void) {
-        
-        let bb = "0,0,0,0"
-        
-        let pin = Pin(name: "New Note from FlickrClient", context: context)
+    func getPhotos(context: NSManagedObjectContext, pin: Pin, completionHandlerForSession: (success: Bool, errorString: String?) -> Void) {
+    
         
         //Establish parameters for GET request
         let method = ""
@@ -55,7 +52,8 @@ class FlickrClient : NSObject {
              Constants.FlickrRequestKeys.PerPage : Constants.FlickrRequestValues.PerPage,
              Constants.FlickrRequestKeys.SafeSearch : Constants.FlickrRequestValues.SafeSearch,
              Constants.FlickrRequestKeys.Method : Constants.FlickrRequestValues.Method,
-             Constants.FlickrRequestKeys.BoundingBox : bb]
+             Constants.FlickrRequestKeys.Latitude : pin.latitude!,
+             Constants.FlickrRequestKeys.Longitude : pin.longitude!]
         
         //If student locations have already been fetched, no need to fetch again unless specific refresh requested
         /*       if AppData.sharedInstance().hasFetchedStudentLocations {
@@ -82,10 +80,18 @@ class FlickrClient : NSObject {
                 
                 for item in photosArray {
                     let dict = item as! [String: AnyObject]
-                    let photo = dict["title"] as! String
-                    print("Photo: \(photo)")
- //                   Pin(name: photo, context: self.stack.context)
+                    //let photo = dict["title"] as! String
+
+                    let photo = Photo(title: dict["title"] as! String, url_m: dict["url_m"] as! String, context: context)
+                    if let url  = NSURL(string: photo.url_m!),
+                        data = NSData(contentsOfURL: url)
+                    {
+                        photo.image = data
+                    }
                     
+                    photo.pin = pin
+                    
+                    print("Photo: \(photo)")
                  }
                  /*AppData.sharedInstance().hasFetchedStudentLocations = true
                  completionHandlerForSession(success: true, studentLocations: AppData.sharedInstance().studentLocations, errorString: nil)*/

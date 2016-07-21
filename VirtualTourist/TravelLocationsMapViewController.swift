@@ -10,15 +10,41 @@ import Foundation
 
 import UIKit
 import MapKit
+import CoreData
 
-class TravelLocationsMapViewController: UIViewController {
+class TravelLocationsMapViewController: UIViewController, NSFetchedResultsControllerDelegate {
+    
+    let pin : Pin? = nil
+    //let context : NSManagedObjectContext? = nil
+
+
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
+    
+    override func viewWillAppear(animated: Bool) {
+        //super.viewWillAppear(true)
+        
+        // Restore earlier map position and size
+        if NSUserDefaults.standardUserDefaults().valueForKey("mapOriginX") != nil {
+            let mapPoint = MKMapPointMake((NSUserDefaults.standardUserDefaults().valueForKey("mapOriginX") as! Double), NSUserDefaults.standardUserDefaults().valueForKey("mapOriginY") as! Double)
+            let mapSize = MKMapSize(width: (NSUserDefaults.standardUserDefaults().valueForKey("mapWidth") as! Double), height: (NSUserDefaults.standardUserDefaults().valueForKey("mapHeight") as! Double))
+            let mapRect = MKMapRect(origin: mapPoint, size: mapSize)
+            mapView.setVisibleMapRect(mapRect, animated: true)
+        }
+        
+        // Load pins from core data
+        
+        
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+
         
         mapView.delegate = self
         activityIndicator.hidden = false
@@ -26,13 +52,64 @@ class TravelLocationsMapViewController: UIViewController {
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action:#selector(TravelLocationsMapViewController.handleTap(_:)))
         gestureRecognizer.delegate = self
         mapView.addGestureRecognizer(gestureRecognizer)
+
+        // Get the stack
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let stack = delegate.stack
+        
+        // Create a fetchrequest
+        let fr = NSFetchRequest(entityName: "Pin")
+        fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        //                      NSSortDescriptor(key: "creationDate", ascending: false)]
+        
+        // Create the FetchedResultsController
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
+                                                              managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        //let ip = NSIndexPath.init(index: 0)
+        
+        let pin = fetchedResultsController.fetchedObjects?.count
+
+        print(pin)
+        
+        if fetchedResultsController.fetchedObjects != nil {
+            for pin in fetchedResultsController.fetchedObjects as! [Pin] {
+                print(pin.name)
+            }
+        }
+        
+  //      let ip = NSIndexPath.indexAtPosition(1)
+  //      let n = fetchedResultsController.objectAtIndexPath(ip)
+  //      print(n)
+        /*     for name in fetchedResultsController.fetchedObjects! {
+
+            print(name)
+        }*/
+        //let pin = fetchedResultsController.objectAtIndexPath()
+        
+        
+        
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        let originX = mapView.visibleMapRect.origin.x
+        let originY = mapView.visibleMapRect.origin.y
+        let mapWidth = mapView.visibleMapRect.size.width
+        let mapHeight = mapView.visibleMapRect.size.height
+        /*        print("Saved X = \(originX)")
+         print("Saved Y = \(originY)")
+         print("Saved width = \(mapWidth)")
+         print("Saved height = \(mapHeight)") */
+        NSUserDefaults.standardUserDefaults().setValue(originX, forKey: "mapOriginX")
+        NSUserDefaults.standardUserDefaults().setValue(originY, forKey: "mapOriginY")
+        NSUserDefaults.standardUserDefaults().setValue(mapWidth, forKey: "mapWidth")
+        NSUserDefaults.standardUserDefaults().setValue(mapHeight, forKey: "mapHeight")
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
 }
 
 
@@ -61,6 +138,7 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
         //    return nil
     }
     
+    
     //If call out it tapped then open URL link in Student Location
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView,
                  calloutAccessoryControlTapped control: UIControl) {
@@ -77,8 +155,26 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
         }
     }
     
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView, pinTapped control: UIControl ) {
+        print("Did select annotation")
+    }
+    
+    
+    
     func mapViewDidFinishRenderingMap(mapView: MKMapView, fullyRendered: Bool){
         activityIndicator.hidden = true
+ /*       let originX = mapView.visibleMapRect.origin.x
+        let originY = mapView.visibleMapRect.origin.y
+        let mapWidth = mapView.visibleMapRect.size.width
+        let mapHeight = mapView.visibleMapRect.size.height
+/*        print("Saved X = \(originX)")
+        print("Saved Y = \(originY)")
+        print("Saved width = \(mapWidth)")
+        print("Saved height = \(mapHeight)") */
+        NSUserDefaults.standardUserDefaults().setValue(originX, forKey: "mapOriginX")
+        NSUserDefaults.standardUserDefaults().setValue(originY, forKey: "mapOriginY")
+        NSUserDefaults.standardUserDefaults().setValue(mapWidth, forKey: "mapWidth")
+        NSUserDefaults.standardUserDefaults().setValue(mapHeight, forKey: "mapHeight")*/
     }
     
     func handleTap(gestureReconizer: UILongPressGestureRecognizer) {
@@ -90,6 +186,23 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
         let annotation = MKPointAnnotation()
         annotation.coordinate = coordinate
         mapView.addAnnotation(annotation)
+        
+        
+        // Get the stack
+        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let stack = delegate.stack
+        
+        // Create the pin in Core Data
+        let pin = Pin(name: "New Pin from map", latitude: coordinate.latitude, longitude: coordinate.longitude, context: stack.context)
+        print("Just created a pin: \(pin)")
+        
+        //Get the photos
+        let fc = FlickrClient.sharedInstance()
+        fc.getPhotos(stack.context, pin: pin) { (success, errorString) in
+            print("Photos being retrieved")
+        }
+        
+        
     }
     
     

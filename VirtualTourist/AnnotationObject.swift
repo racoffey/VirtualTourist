@@ -8,31 +8,31 @@
 
 import Foundation
 import MapKit
-/*
+
 // Class to meet MKAnnotation protocol requirements for map annotation
 class AnnotationObject: NSObject, MKAnnotation {
     
     //Parameters
     var coordinate: CLLocationCoordinate2D
-    var firstName: String
-    var lastName: String
-    var mediaURL: String
+    var latitude: CLLocationDegrees
+    var longitude: CLLocationDegrees
+    var name: String
     
     init(pin: Pin) {
-        self.coordinate = pin.latitude
-        self.firstName = pin.longitude
-        self.lastName = pin.name
-        self.mediaURL = pin.mediaURL!
+        self.latitude = pin.latitude as! CLLocationDegrees
+        self.longitude = pin.longitude as! CLLocationDegrees
+        self.name = pin.name!
+        coordinate = CLLocationCoordinate2DMake(latitude, longitude)
         
         super.init()
     }
     
     // Name and URL variables can be called according to the MKAnnotation protocol
     var title: String? {
-        return firstName + " " + lastName
+        return name
     }
     
     var subtitle: String? {
-        return mediaURL
+        return ""
     }
-}*/
+}

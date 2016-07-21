@@ -14,3 +14,9 @@ func performUIUpdatesOnMain(updates: () -> Void) {
         updates()
     }
 }
+
+func performUIUpdatesOnBackground(updates: () ->Void) {
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
+        updates()
+    }
+}

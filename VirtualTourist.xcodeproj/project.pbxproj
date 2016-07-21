@@ -30,6 +30,7 @@
 		A85518A21D3547150004AA35 /* FlickrClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85518A11D3547150004AA35 /* FlickrClient.swift */; };
 		A85518A41D3552940004AA35 /* AppData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85518A31D3552940004AA35 /* AppData.swift */; };
 		A85518A61D3909250004AA35 /* TravelLocationsMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85518A51D3909250004AA35 /* TravelLocationsMapViewController.swift */; };
+		A85518A81D3AE18D0004AA35 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85518A71D3AE18D0004AA35 /* PhotoAlbumViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 		A85518A11D3547150004AA35 /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
 		A85518A31D3552940004AA35 /* AppData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppData.swift; sourceTree = "<group>"; };
 		A85518A51D3909250004AA35 /* TravelLocationsMapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TravelLocationsMapViewController.swift; sourceTree = "<group>"; };
+		A85518A71D3AE18D0004AA35 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,6 +183,7 @@
 				A85518941D2E8D720004AA35 /* PhotosViewController.swift */,
 				A85518961D2E913D0004AA35 /* PhotoViewController.swift */,
 				A85518A51D3909250004AA35 /* TravelLocationsMapViewController.swift */,
+				A85518A71D3AE18D0004AA35 /* PhotoAlbumViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 				A855184A1D27E3A00004AA35 /* ViewController.swift in Sources */,
 				A85518951D2E8D720004AA35 /* PhotosViewController.swift in Sources */,
 				A85518921D2E77A70004AA35 /* Pin+CoreDataProperties.swift in Sources */,
+				A85518A81D3AE18D0004AA35 /* PhotoAlbumViewController.swift in Sources */,
 				A85518481D27E3A00004AA35 /* AppDelegate.swift in Sources */,
 				A85518771D27E3F40004AA35 /* Model.xcdatamodeld in Sources */,
 				A85518971D2E913D0004AA35 /* PhotoViewController.swift in Sources */,

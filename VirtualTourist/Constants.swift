@@ -46,7 +46,9 @@ struct Constants {
         static let PerPage = "per_page"
         static let BoundingBox = "bbox"
         static let Method = "method"
-
+        static let Latitude = "lat"
+        static let Longitude = "lon"
+        static let Radius = "radius"
     }
     
     // Flickr request values
@@ -56,7 +58,7 @@ struct Constants {
         static let NoJsonCallBack = "1"
         static let Extras = "url_m,date_taken"
         static let SafeSearch = "1"
-        static let PerPage = "5"
+        static let PerPage = "10"
         static let Method = "flickr.photos.search"
     
     }

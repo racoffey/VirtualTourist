@@ -14,7 +14,7 @@ class Photo: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
 
-    convenience init(title: String, context: NSManagedObjectContext){
+    convenience init(title: String, url_m: String, context: NSManagedObjectContext){
         
         // An EntityDescription is an object that has access to all
         // the information you provided in the Entity part of the model
@@ -22,7 +22,8 @@ class Photo: NSManagedObject {
         if let ent = NSEntityDescription.entityForName("Photo",
                                                        inManagedObjectContext: context){
             self.init(entity: ent, insertIntoManagedObjectContext: context)
-            self.title = title;
+            self.title = title
+            self.url_m = url_m
             self.date_taken = NSDate()
         }else{
             fatalError("Unable to find Entity name!")

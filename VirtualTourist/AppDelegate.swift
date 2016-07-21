@@ -25,10 +25,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("Error droping all objects in DB")
         }
         
-        Pin(name: "New pin", context: self.stack.context)
+ //       Pin(name: "New pin", context: self.stack.context)
         // Create notebooks
-        let pin1 = Pin(name : "First pin", context: stack.context)
-        let pin2  = Pin(name: "Second pin", context: stack.context)
+        let pin1 = Pin(name : "First pin", latitude: 0, longitude: 0, context: stack.context)
+        let pin2  = Pin(name: "Second pin", latitude: 0, longitude: 0, context: stack.context)
         
         // Check out the "data" field when you print an NSManagedObject subclass.
         // It looks like a Dictionary and the values in it are called
@@ -38,8 +38,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print(pin2)
         
         // Create Notes
-        let wwdc = Photo(title: "WWDC", context: stack.context)
-        let kitura = Photo(title: "Learn about Kitura, a web framework in Swift by IBM", context: stack.context)
+        let wwdc = Photo(title: "WWDC", url_m: "", context: stack.context)
+        let kitura = Photo(title: "Learn about Kitura, a web framework in Swift by IBM", url_m: "", context: stack.context)
         
         // When you print any of these notes, you should notice that the notebook
         // relationship is nil. We explicitly forbid this in the Data Model, so
@@ -65,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         
     // Let's now add note to ideas
-        let daDump = Photo(title: "daDump: social network for people using the toilet", context: stack.context)
+        let daDump = Photo(title: "daDump: social network for people using the toilet", url_m: "", context: stack.context)
         daDump.pin = pin1
    
         

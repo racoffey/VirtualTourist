@@ -38,6 +38,19 @@ class PhotosViewController: CoreDataTableViewController {
         // Sync note -> cell
         cell.textLabel?.text = photo.title
         
+ /*       performUIUpdatesOnBackground(){
+        if let url  = NSURL(string: photo.url_m!),
+            data = NSData(contentsOfURL: url)
+        {
+            cell.imageView!.image = UIImage(data: data)
+        }
+        }
+*/
+        if (photo.image != nil) {
+            cell.imageView!.image = UIImage(data: photo.image!)
+        }
+        
+        
         // Return the cell
         return cell
     }
@@ -63,7 +76,7 @@ class PhotosViewController: CoreDataTableViewController {
         if let pn = pin, context = fetchedResultsController?.managedObjectContext{
             
             // Just create a new note and you're done!
-            let photo = Photo(title: "New Photo", context: context)
+            let photo = Photo(title: "New Photo", url_m: "", context: context)
             photo.pin = pn
             
         }
@@ -75,7 +88,7 @@ class PhotosViewController: CoreDataTableViewController {
     // MARK:  - Navigation
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         
-        if segue.identifier == "displayPhoto" {
+        if segue.identifier == "showPhoto" {
             
             
             // Get the note

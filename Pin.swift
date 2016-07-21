@@ -14,7 +14,7 @@ class Pin: NSManagedObject {
 
 // Insert code here to add functionality to your managed object subclass
     
-    convenience init(name: String, context: NSManagedObjectContext){
+    convenience init(name: String, latitude: Double, longitude: Double, context: NSManagedObjectContext){
         
         // An EntityDescription is an object that has access to all
         // the information you provided in the Entity part of the model
@@ -23,6 +23,9 @@ class Pin: NSManagedObject {
                                                        inManagedObjectContext: context){
             self.init(entity: ent, insertIntoManagedObjectContext: context)
             self.name = name;
+            self.latitude = latitude
+            self.longitude = longitude
+            
             print("Reached Pin")
             self.creationDate = NSDate()
         }else{

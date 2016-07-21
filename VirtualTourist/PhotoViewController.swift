@@ -10,20 +10,19 @@ import Foundation
 import UIKit
 //import CoreData
 
-class PhotoViewController: UITableViewController {
+class PhotoViewController: UIViewController {
     
+    @IBOutlet weak var imageView: UIImageView!
     
     // MARK:  - Properties
-    @IBOutlet weak var relativeDateView: UILabel!
-    @IBOutlet weak var dateView: UILabel!
-    @IBOutlet weak var textView: UITextView!
+
     var model : Photo?
-    
+ 
     func syncViewsWithModel(){
         
         if let model = model{
             
-            // Text
+     /*       // Text
             textView.text = model.text
             
             // date
@@ -38,9 +37,13 @@ class PhotoViewController: UITableViewController {
             relativeFmt.doesRelativeDateFormatting = true
             relativeFmt.locale = NSLocale.currentLocale()
             
-            relativeDateView.text = relativeFmt.stringFromDate(model.date_taken!)
+            relativeDateView.text = relativeFmt.stringFromDate(model.date_taken!)*/
+            
+            if (model.image != nil) {
+                imageView.image = UIImage(data: model.image!)
+            }
         }
-        
+    
         
     }
     
@@ -64,7 +67,7 @@ class PhotoViewController: UITableViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
+    /*
     // MARK: - Table view data source
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -76,7 +79,7 @@ class PhotoViewController: UITableViewController {
         // #warning Incomplete implementation, return the number of rows
         return 0
     }
-    
+    */
     /*
      override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
      let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath)
