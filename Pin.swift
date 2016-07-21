@@ -1,3 +1,5 @@
+
+
 //
 //  Pin.swift
 //  VirtualTourist
@@ -8,11 +10,12 @@
 
 import Foundation
 import CoreData
+import MapKit
 
 
-class Pin: NSManagedObject {
-
-// Insert code here to add functionality to your managed object subclass
+class Pin: NSManagedObject, MKAnnotation {
+    
+    // Insert code here to add functionality to your managed object subclass
     
     convenience init(name: String, latitude: Double, longitude: Double, context: NSManagedObjectContext){
         
@@ -33,5 +36,14 @@ class Pin: NSManagedObject {
         }
         
     }
-
+    
+    var title: String? {
+        return name
+    }
+    
+    var coordinate: CLLocationCoordinate2D {
+        let coordinate = CLLocationCoordinate2DMake(self.latitude as! CLLocationDegrees, self.longitude as! CLLocationDegrees)
+        return coordinate
+    }
+    
 }

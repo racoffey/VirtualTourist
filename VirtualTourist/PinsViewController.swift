@@ -43,7 +43,7 @@ class PinsViewController: CoreDataTableViewController {
         // Create the FetchedResultsController
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
                                                               managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        
+ 
         let number = fetchedResultsController?.fetchedObjects?.count
         print("Fetched results = \(number)")
         
@@ -139,8 +139,10 @@ class PinsViewController: CoreDataTableViewController {
             }
         }
         
-/*        if segue.identifier! == "segueToMap" {
-            let 
+/*       if segue.identifier! == "segueToMap" {
+        if let mapVC = segue.destinationViewController as? TravelLocationsMapViewController{
+            let mapVC.stack = 
+        }
         }*/
     }
 }

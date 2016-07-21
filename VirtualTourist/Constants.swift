@@ -15,6 +15,11 @@ import MapKit
 
 struct Constants {
     
+    // Core data model constants
+    struct CDModel {
+        static let SQLFileName = "model"
+    }
+    
     // Flickr URL API parameters
     struct Flickr {
         static let ApiScheme = "https"

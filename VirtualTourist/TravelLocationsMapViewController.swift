@@ -14,10 +14,11 @@ import CoreData
 
 class TravelLocationsMapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
+    //let stack = AppDelegate
     let pin : Pin? = nil
     //let context : NSManagedObjectContext? = nil
 
-
+    var sharedContext = CoreDataStackManager.sharedInstance().managedObjectContext!
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -68,27 +69,28 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         
         //let ip = NSIndexPath.init(index: 0)
         
+        // Start the fetched results controller
+        var error: NSError?
+        do {
+            try fetchedResultsController.performFetch()
+        } catch let error1 as NSError {
+            error = error1
+        }
+        
+        if let error = error {
+            print("Error performing initial fetch: \(error)")
+        }
+        
         let pin = fetchedResultsController.fetchedObjects?.count
 
-        print(pin)
+        print("Fetched results in map View = \(pin)")
         
         if fetchedResultsController.fetchedObjects != nil {
             for pin in fetchedResultsController.fetchedObjects as! [Pin] {
                 print(pin.name)
+                mapView.addAnnotation(pin)
             }
         }
-        
-  //      let ip = NSIndexPath.indexAtPosition(1)
-  //      let n = fetchedResultsController.objectAtIndexPath(ip)
-  //      print(n)
-        /*     for name in fetchedResultsController.fetchedObjects! {
-
-            print(name)
-        }*/
-        //let pin = fetchedResultsController.objectAtIndexPath()
-        
-        
-        
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -132,6 +134,7 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             view.calloutOffset = CGPoint(x: -10, y: 10)
             view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView
         }
+        view.canShowCallout = false
         //Return the annotation view
         return view
         //    }
@@ -155,8 +158,11 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
         }
     }
     
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView, pinTapped control: UIControl ) {
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         print("Did select annotation")
+        mapView.deselectAnnotation(view.annotation, animated: true)
+        
     }
     
     
