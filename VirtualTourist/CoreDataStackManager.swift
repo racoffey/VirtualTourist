@@ -120,13 +120,14 @@ class CoreDataStackManager {
     // MARK: - Core Data Saving support
     
     func saveContext () {
-        
+        print("Reached save context")
         if let context = self.managedObjectContext {
             
             var error: NSError? = nil
             
             if context.hasChanges {
                 do {
+                    print("Context has changes and saving context")
                     try context.save()
                 } catch let error1 as NSError {
                     error = error1

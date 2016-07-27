@@ -15,10 +15,20 @@ import CoreData
 class TravelLocationsMapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
     //let stack = AppDelegate
-    let pin : Pin? = nil
+    var pin : Pin? = nil
+    //var pinName : String = ""
     //let context : NSManagedObjectContext? = nil
-
+    
+    //let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+    
     var sharedContext = CoreDataStackManager.sharedInstance().managedObjectContext!
+    
+ //   let stack = delegate.stack
+    var nextPinNumber : Int = 0
+    
+    // Get the stack
+
+ //   var sharedContext = CoreDataStackManager.sharedInstance().managedObjectContext!
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -34,10 +44,6 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
             let mapRect = MKMapRect(origin: mapPoint, size: mapSize)
             mapView.setVisibleMapRect(mapRect, animated: true)
         }
-        
-        // Load pins from core data
-        
-        
     }
     
     
@@ -54,18 +60,15 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         gestureRecognizer.delegate = self
         mapView.addGestureRecognizer(gestureRecognizer)
 
-        // Get the stack
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let stack = delegate.stack
-        
         // Create a fetchrequest
         let fr = NSFetchRequest(entityName: "Pin")
         fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         //                      NSSortDescriptor(key: "creationDate", ascending: false)]
         
         // Create the FetchedResultsController
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
-                                                              managedObjectContext: stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        //let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,managedObjectContext: delegate.stack.context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: sharedContext, sectionNameKeyPath: nil, cacheName: nil)
         
         //let ip = NSIndexPath.init(index: 0)
         
@@ -81,9 +84,9 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
             print("Error performing initial fetch: \(error)")
         }
         
-        let pin = fetchedResultsController.fetchedObjects?.count
+        nextPinNumber = (fetchedResultsController.fetchedObjects?.count)! + 1
 
-        print("Fetched results in map View = \(pin)")
+        print("Next Pin number in map View = \(nextPinNumber)")
         
         if fetchedResultsController.fetchedObjects != nil {
             for pin in fetchedResultsController.fetchedObjects as! [Pin] {
@@ -98,14 +101,11 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         let originY = mapView.visibleMapRect.origin.y
         let mapWidth = mapView.visibleMapRect.size.width
         let mapHeight = mapView.visibleMapRect.size.height
-        /*        print("Saved X = \(originX)")
-         print("Saved Y = \(originY)")
-         print("Saved width = \(mapWidth)")
-         print("Saved height = \(mapHeight)") */
         NSUserDefaults.standardUserDefaults().setValue(originX, forKey: "mapOriginX")
         NSUserDefaults.standardUserDefaults().setValue(originY, forKey: "mapOriginY")
         NSUserDefaults.standardUserDefaults().setValue(mapWidth, forKey: "mapWidth")
         NSUserDefaults.standardUserDefaults().setValue(mapHeight, forKey: "mapHeight")
+        print("Saving map settings")
     }
     
     override func didReceiveMemoryWarning() {
@@ -130,19 +130,17 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
         } else {
             //If queued annotations not availabel then create new with call out and accessory
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-            view.canShowCallout = true
+     /*       view.canShowCallout = true
             view.calloutOffset = CGPoint(x: -10, y: 10)
-            view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView
+            view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView */
         }
         view.canShowCallout = false
         //Return the annotation view
         return view
-        //    }
-        //    return nil
     }
     
     
-    //If call out it tapped then open URL link in Student Location
+/*    //If call out it tapped then open URL link in Student Location
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView,
                  calloutAccessoryControlTapped control: UIControl) {
         //let annotation = view.annotation
@@ -157,58 +155,50 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             displayError("Cannot present web page")
         }
     }
-    
+*/
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        print("Did select annotation")
-        mapView.deselectAnnotation(view.annotation, animated: true)
+        print("Selected annotation = \(view.annotation?.title)")
+        //pin = Pin(name: view.annotation!.title!!, latitude: (view.annotation?.coordinate.latitude)!, longitude: view.annotation!.coordinate.longitude, context: stack.context)
         
+        pin = view.annotation as? Pin
+        
+       // pinName = (view.annotation?.title)!
+        mapView.deselectAnnotation(view.annotation, animated: true)
+        performSegueWithIdentifier("showPhotoAlbum", sender: self)
     }
     
     
     
     func mapViewDidFinishRenderingMap(mapView: MKMapView, fullyRendered: Bool){
         activityIndicator.hidden = true
- /*       let originX = mapView.visibleMapRect.origin.x
-        let originY = mapView.visibleMapRect.origin.y
-        let mapWidth = mapView.visibleMapRect.size.width
-        let mapHeight = mapView.visibleMapRect.size.height
-/*        print("Saved X = \(originX)")
-        print("Saved Y = \(originY)")
-        print("Saved width = \(mapWidth)")
-        print("Saved height = \(mapHeight)") */
-        NSUserDefaults.standardUserDefaults().setValue(originX, forKey: "mapOriginX")
-        NSUserDefaults.standardUserDefaults().setValue(originY, forKey: "mapOriginY")
-        NSUserDefaults.standardUserDefaults().setValue(mapWidth, forKey: "mapWidth")
-        NSUserDefaults.standardUserDefaults().setValue(mapHeight, forKey: "mapHeight")*/
     }
     
-    func handleTap(gestureReconizer: UILongPressGestureRecognizer) {
+    func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {
+        //gestureRecognizer.state
+        print("Reached handleTap \(gestureRecognizer.state.hashValue)")
+        if gestureRecognizer.state.hashValue == 1 {
+            let location = gestureRecognizer.locationInView(mapView)
+            let coordinate = mapView.convertPoint(location,toCoordinateFromView: mapView)
         
-        let location = gestureReconizer.locationInView(mapView)
-        let coordinate = mapView.convertPoint(location,toCoordinateFromView: mapView)
+            // Add annotation:
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            mapView.addAnnotation(annotation)
         
-        // Add annotation:
-        let annotation = MKPointAnnotation()
-        annotation.coordinate = coordinate
-        mapView.addAnnotation(annotation)
-        
-        
-        // Get the stack
+
+ /*       // Get the stack
         let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
         let stack = delegate.stack
-        
+ */
         // Create the pin in Core Data
-        let pin = Pin(name: "New Pin from map", latitude: coordinate.latitude, longitude: coordinate.longitude, context: stack.context)
-        print("Just created a pin: \(pin)")
         
-        //Get the photos
-        let fc = FlickrClient.sharedInstance()
-        fc.getPhotos(stack.context, pin: pin) { (success, errorString) in
-            print("Photos being retrieved")
+            let pin = Pin(name: "pin \(nextPinNumber)", latitude: coordinate.latitude, longitude: coordinate.longitude, context: sharedContext)
+            print("Just created a pin: \(pin.name)")
+            nextPinNumber += 1
+            CoreDataStackManager.sharedInstance().saveContext()
+        
         }
-        
-        
     }
     
     
@@ -218,6 +208,50 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
         let alert = UIAlertController(title: "Error", message: error, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.Default, handler: nil ))
         self.presentViewController(alert, animated: true, completion: nil)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+        print("Reached prepare for Segue")
+        if segue.identifier! == "showPhotoAlbum"{
+            
+            if let photoAlbumVC = segue.destinationViewController as? PhotoAlbumViewController{
+                
+                // Create Fetch Request
+                //let fr = NSFetchRequest(entityName: "Photo")
+                
+                //fr.sortDescriptors = [NSSortDescriptor(key: "date_taken", ascending: false),
+                  //                    NSSortDescriptor(key: "title", ascending: true)]
+                
+                // So far we have a search that will match ALL notes. However, we're
+                // only interested in those within the current notebook:
+                // NSPredicate to the rescue!
+    //            let indexPath = tableView.indexPathForSelectedRow!
+    //            let pin = fetchedResultsController?.objectAtIndexPath(indexPath) as? Pin
+                //let pin = fetchedResultsController
+                
+    //            let pred = NSPredicate(format: "pin = %@", argumentArray: [pin!])
+                
+    //            fr.predicate = pred
+                
+/*                // Get the stack
+                let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                let stack = delegate.stack
+ */
+                // Create the FetchedResultsController
+             /*  let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,
+                                                                        managedObjectContext: sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+    
+                */
+                // Inject it into the notesVC
+             //   photoAlbumVC.fetchedResultsController = fetchedResultsController
+                
+                // Inject the notebook too!
+                photoAlbumVC.pin = pin
+                
+            }
+        }
     }
 }
 

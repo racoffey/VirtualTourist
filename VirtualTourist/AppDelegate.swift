@@ -15,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let stack = CoreDataStack(modelName: "Model")!
     
-    /*
     func preloadData(){
         
         // Remove previous stuff (if any)
@@ -24,7 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }catch{
             print("Error droping all objects in DB")
         }
-        
+    }
+/*
  //       Pin(name: "New pin", context: self.stack.context)
         // Create notebooks
         let pin1 = Pin(name : "First pin", latitude: 0, longitude: 0, context: stack.context)
@@ -99,7 +99,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         // Load some notebooks and notes.
-     //   preloadData()
+        preloadData()
         
         // Start Autosaving
         stack.autoSave(60)

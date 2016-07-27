@@ -33,7 +33,7 @@ class FlickrClient : NSObject {
     // Initializers
     
     override init() {
-        AppData.sharedInstance().photos = []
+        //AppData.sharedInstance().photos = []
         super.init()
     }
     
@@ -91,8 +91,9 @@ class FlickrClient : NSObject {
                     
                     photo.pin = pin
                     
-                    print("Photo: \(photo)")
+                    print("Photo being saved to Core Data: \(photo.title)")
                  }
+                CoreDataStackManager.sharedInstance().saveContext()
                  /*AppData.sharedInstance().hasFetchedStudentLocations = true
                  completionHandlerForSession(success: true, studentLocations: AppData.sharedInstance().studentLocations, errorString: nil)*/
             }

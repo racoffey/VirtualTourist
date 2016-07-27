@@ -63,7 +63,7 @@ struct Constants {
         static let NoJsonCallBack = "1"
         static let Extras = "url_m,date_taken"
         static let SafeSearch = "1"
-        static let PerPage = "10"
+        static let PerPage = "12"
         static let Method = "flickr.photos.search"
     
     }

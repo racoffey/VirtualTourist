@@ -10,6 +10,8 @@
 		A835A9DB1D40BBF0009572FD /* CoreDataStackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A835A9DA1D40BBF0009572FD /* CoreDataStackManager.swift */; };
 		A835A9E21D40F361009572FD /* Pin+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A835A9E01D40F361009572FD /* Pin+CoreDataProperties.swift */; };
 		A835A9E31D40F361009572FD /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A835A9E11D40F361009572FD /* Pin.swift */; };
+		A835A9E51D421A42009572FD /* ColorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A835A9E41D421A42009572FD /* ColorViewController.swift */; };
+		A835A9E71D421B4B009572FD /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A835A9E61D421B4B009572FD /* PhotoCell.swift */; };
 		A85518481D27E3A00004AA35 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85518471D27E3A00004AA35 /* AppDelegate.swift */; };
 		A855184A1D27E3A00004AA35 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85518491D27E3A00004AA35 /* ViewController.swift */; };
 		A855184F1D27E3A00004AA35 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A855184E1D27E3A00004AA35 /* Assets.xcassets */; };
@@ -55,6 +57,8 @@
 		A835A9DA1D40BBF0009572FD /* CoreDataStackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStackManager.swift; sourceTree = "<group>"; };
 		A835A9E01D40F361009572FD /* Pin+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Pin+CoreDataProperties.swift"; path = "../Pin+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		A835A9E11D40F361009572FD /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Pin.swift; path = ../Pin.swift; sourceTree = "<group>"; };
+		A835A9E41D421A42009572FD /* ColorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorViewController.swift; sourceTree = "<group>"; };
+		A835A9E61D421B4B009572FD /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
 		A85518441D27E3A00004AA35 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A85518471D27E3A00004AA35 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A85518491D27E3A00004AA35 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -185,8 +189,10 @@
 				A85518861D2D18D20004AA35 /* PinsViewController.swift */,
 				A85518941D2E8D720004AA35 /* PhotosViewController.swift */,
 				A85518961D2E913D0004AA35 /* PhotoViewController.swift */,
+				A835A9E41D421A42009572FD /* ColorViewController.swift */,
 				A85518A51D3909250004AA35 /* TravelLocationsMapViewController.swift */,
 				A85518A71D3AE18D0004AA35 /* PhotoAlbumViewController.swift */,
+				A835A9E61D421B4B009572FD /* PhotoCell.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -341,6 +347,7 @@
 				A85518951D2E8D720004AA35 /* PhotosViewController.swift in Sources */,
 				A85518A81D3AE18D0004AA35 /* PhotoAlbumViewController.swift in Sources */,
 				A85518481D27E3A00004AA35 /* AppDelegate.swift in Sources */,
+				A835A9E51D421A42009572FD /* ColorViewController.swift in Sources */,
 				A85518771D27E3F40004AA35 /* Model.xcdatamodeld in Sources */,
 				A85518971D2E913D0004AA35 /* PhotoViewController.swift in Sources */,
 				A855189E1D32B4CE0004AA35 /* GCDBlackBox.swift in Sources */,
@@ -356,6 +363,7 @@
 				A85518A01D32B54C0004AA35 /* AnnotationObject.swift in Sources */,
 				A855188E1D2E74EC0004AA35 /* Photo+CoreDataProperties.swift in Sources */,
 				A85518871D2D18D20004AA35 /* PinsViewController.swift in Sources */,
+				A835A9E71D421B4B009572FD /* PhotoCell.swift in Sources */,
 				A85518851D2D0EDB0004AA35 /* CoreDataTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
