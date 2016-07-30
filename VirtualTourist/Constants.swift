@@ -54,6 +54,7 @@ struct Constants {
         static let Latitude = "lat"
         static let Longitude = "lon"
         static let Radius = "radius"
+        static let Page = "page"
     }
     
     // Flickr request values

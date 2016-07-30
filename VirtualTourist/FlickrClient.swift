@@ -39,7 +39,7 @@ class FlickrClient : NSObject {
     
     
     // Get a number of the last student locations
-    func getPhotos(context: NSManagedObjectContext, pin: Pin, completionHandlerForSession: (success: Bool, errorString: String?) -> Void) {
+    func getPhotos(context: NSManagedObjectContext, pin: Pin, page: Int, completionHandlerForSession: (success: Bool, errorString: String?) -> Void) {
     
         
         //Establish parameters for GET request
@@ -53,7 +53,8 @@ class FlickrClient : NSObject {
              Constants.FlickrRequestKeys.SafeSearch : Constants.FlickrRequestValues.SafeSearch,
              Constants.FlickrRequestKeys.Method : Constants.FlickrRequestValues.Method,
              Constants.FlickrRequestKeys.Latitude : pin.latitude!,
-             Constants.FlickrRequestKeys.Longitude : pin.longitude!]
+             Constants.FlickrRequestKeys.Longitude : pin.longitude!,
+             Constants.FlickrRequestKeys.Page : page]
         
         //If student locations have already been fetched, no need to fetch again unless specific refresh requested
         /*       if AppData.sharedInstance().hasFetchedStudentLocations {
@@ -69,15 +70,11 @@ class FlickrClient : NSObject {
                 completionHandlerForSession(success: false, errorString: "Failed to get student locations. \(error)")
             } else {
                 //Put results into a data object and extract each student location into the Student Locations array and return array
-                AppData.sharedInstance().photos.removeAll()
-                print("Results: \(results)")
+                //AppData.sharedInstance().photos.removeAll()
                 var resultsDict = results as! [String: AnyObject]
-                print(resultsDict)
                 let photoResults = resultsDict["photos"] as! [String: AnyObject]
-                print("PhotoResults = \(photoResults)")
                 let photosArray = photoResults["photo"] as! [AnyObject]
-                print("PhotoArray = \(photosArray)")
-                
+
                 for item in photosArray {
                     let dict = item as! [String: AnyObject]
                     //let photo = dict["title"] as! String

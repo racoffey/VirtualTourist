@@ -14,12 +14,7 @@ import CoreData
 
 class TravelLocationsMapViewController: UIViewController, NSFetchedResultsControllerDelegate {
     
-    //let stack = AppDelegate
     var pin : Pin? = nil
-    //var pinName : String = ""
-    //let context : NSManagedObjectContext? = nil
-    
-    //let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
     var sharedContext = CoreDataStackManager.sharedInstance().managedObjectContext!
     
@@ -51,8 +46,6 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-
-        
         mapView.delegate = self
         activityIndicator.hidden = false
         
@@ -60,7 +53,7 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         gestureRecognizer.delegate = self
         mapView.addGestureRecognizer(gestureRecognizer)
 
-        // Create a fetchrequest
+ /*       // Create a fetchrequest
         let fr = NSFetchRequest(entityName: "Pin")
         fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         //                      NSSortDescriptor(key: "creationDate", ascending: false)]
@@ -71,18 +64,10 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: sharedContext, sectionNameKeyPath: nil, cacheName: nil)
         
         //let ip = NSIndexPath.init(index: 0)
-        
+*/
         // Start the fetched results controller
-        var error: NSError?
-        do {
-            try fetchedResultsController.performFetch()
-        } catch let error1 as NSError {
-            error = error1
-        }
-        
-        if let error = error {
-            print("Error performing initial fetch: \(error)")
-        }
+
+        fetchResults()
         
         nextPinNumber = (fetchedResultsController.fetchedObjects?.count)! + 1
 
@@ -112,6 +97,30 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    lazy var fetchedResultsController: NSFetchedResultsController = {
+        
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        fetchRequest.sortDescriptors = []
+        
+        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        fetchedResultsController.delegate = self
+        
+        return fetchedResultsController
+    }()
+    
+    func fetchResults() {
+        var error: NSError?
+        do {
+            try fetchedResultsController.performFetch()
+        } catch let error1 as NSError {
+            error = error1
+        }
+        
+        if let error = error {
+            print("Error performing initial fetch: \(error)")
+        }
+    }
 }
 
 
@@ -120,7 +129,6 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
         //Use Student Location as annotation object, create annotation view and assign queued annotations if possible
-        //     if let annotation = annotation as? StudentLocation {
         let identifier = "pin"
         var view: MKPinAnnotationView
         if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
@@ -128,34 +136,14 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             dequeuedView.annotation = annotation
             view = dequeuedView
         } else {
-            //If queued annotations not availabel then create new with call out and accessory
+            //If queued annotations not available then create new with call out and accessory
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
-     /*       view.canShowCallout = true
-            view.calloutOffset = CGPoint(x: -10, y: 10)
-            view.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure) as UIView */
         }
         view.canShowCallout = false
         //Return the annotation view
         return view
     }
     
-    
-/*    //If call out it tapped then open URL link in Student Location
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView,
-                 calloutAccessoryControlTapped control: UIControl) {
-        //let annotation = view.annotation
-        print("Call out was pressed")
-        print("URL =  \(view.annotation?.subtitle)")
-        //Check URL is properly formatted and if not present error on map
-        if let url = NSURL(string: ((view.annotation?.subtitle)!)!) {
-            print("Url being opened = \(url)")
-            UIApplication.sharedApplication().openURL(url)
-        }
-        else {
-            displayError("Cannot present web page")
-        }
-    }
-*/
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
         print("Selected annotation = \(view.annotation?.title)")
@@ -181,20 +169,18 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             let location = gestureRecognizer.locationInView(mapView)
             let coordinate = mapView.convertPoint(location,toCoordinateFromView: mapView)
         
-            // Add annotation:
+/*            // Add annotation:
             let annotation = MKPointAnnotation()
             annotation.coordinate = coordinate
             mapView.addAnnotation(annotation)
         
-
- /*       // Get the stack
-        let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
-        let stack = delegate.stack
- */
+*/
         // Create the pin in Core Data
+            pin = Pin(name: "pin \(nextPinNumber)", latitude: coordinate.latitude, longitude: coordinate.longitude, context: sharedContext)
+            print("Just created a pin: \(pin!.name)")
         
-            let pin = Pin(name: "pin \(nextPinNumber)", latitude: coordinate.latitude, longitude: coordinate.longitude, context: sharedContext)
-            print("Just created a pin: \(pin.name)")
+            // Add annotation to map
+            mapView.addAnnotation(pin!)
             nextPinNumber += 1
             CoreDataStackManager.sharedInstance().saveContext()
         
@@ -253,5 +239,6 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             }
         }
     }
+    
 }
 

@@ -29,6 +29,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var newCollectionButton: UIButton!
     
     var pin : Pin? = nil
+    var page : Int = 1
     
     //let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
@@ -68,46 +69,20 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         // Restore earlier map position and size
         if NSUserDefaults.standardUserDefaults().valueForKey("mapOriginX") != nil {
             let mapPoint = MKMapPointMake((NSUserDefaults.standardUserDefaults().valueForKey("mapOriginX") as! Double), NSUserDefaults.standardUserDefaults().valueForKey("mapOriginY") as! Double)
-            let mapSize = MKMapSize(width: (NSUserDefaults.standardUserDefaults().valueForKey("mapWidth") as! Double), height: (NSUserDefaults.standardUserDefaults().valueForKey("mapHeight") as! Double))
+            let mapSize = MKMapSize(width: (NSUserDefaults.standardUserDefaults().valueForKey("mapWidth") as! Double)/4, height: (NSUserDefaults.standardUserDefaults().valueForKey("mapHeight") as! Double)/4)
             let mapRect = MKMapRect(origin: mapPoint, size: mapSize)
+            
             mapView.setVisibleMapRect(mapRect, animated: true)
-/*            if pin == nil {
-                mapView.addAnnotation(pin)
+            if pin != nil {
+                mapView.addAnnotation(pin!)
+                mapView.setCenterCoordinate((pin?.coordinate)!, animated: true)
             }
-*/        }
+        }
         
         // Set the title
         title = "Photo Album"
         
-        // Get the stack
- //       let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
- //       let stack = delegate.stack
-        
- /*       // Create a fetchrequest
-        let fr = NSFetchRequest(entityName: "Photo")
-        fr.sortDescriptors = []
-        //fr.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true),NSSortDescriptor(key: "date_Taken", ascending: false)]
-        
-        // Create the FetchedResultsController
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,managedObjectContext: sharedContext, sectionNameKeyPath: nil,cacheName: nil)
-            
-        // Start the fetched results controller
-        var error: NSError?
-        do {
-            try fetchedResultsController.performFetch()
-        } catch let error1 as NSError {
-            error = error1
-        }
-            
-        if let error = error {
-            print("Error performing initial fetch: \(error)")
-        }
-            
-        let count = fetchedResultsController.fetchedObjects?.count
-            
-        print("Fetched results in photo ablum view = \(count)")
-        
-  */
+
         collectionView.delegate = self
         collectionView.dataSource = self
         self.view.addSubview(collectionView)
@@ -191,7 +166,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
         
         print("Photo to add = \(photo.title)")
-        print("Photo image = \(photo.image)")
+        //print("Photo image = \(photo.image)")
         if (photo.image != nil) {
             
             let imageView = UIImageView(frame: CGRectMake(0, 0, collectionView.frame.size.width/3-1, collectionView.frame.size.width/3-1))
@@ -278,6 +253,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             // so that we can add a cell in "controllerDidChangeContent". Note that the "newIndexPath" parameter has
             // the index path that we want in this case
             insertedIndexPaths.append(newIndexPath!)
+
             break
         case .Delete:
             print("Delete an item")
@@ -316,6 +292,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             for indexPath in self.insertedIndexPaths {
                 self.collectionView.insertItemsAtIndexPaths([indexPath])
+                self.collectionView.reloadData()
+                self.collectionView.reloadInputViews()
             }
             
             for indexPath in self.deletedIndexPaths {
@@ -327,6 +305,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             }
             
             }, completion: nil)
+        
+        collectionView.reloadData()
+        print("Reloading data in DidChangeContent")
     }
     
     func deleteAllPhotos() {
@@ -354,9 +335,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     func getPhotos() {
         print("Getting photos with pin: \(pin!)")
-        FlickrClient.sharedInstance().getPhotos(sharedContext, pin: pin!) { (success, errorString) in
-            if success { return }
-            else {
+        FlickrClient.sharedInstance().getPhotos(sharedContext, pin: pin!, page: page) { (success, errorString) in
+            if success {
+                self.collectionView.reloadData()
+                print("Data reloaded")
+                //CoreDataStackManager.sharedInstance().saveContext()
+                self.page += 1
+            } else {
                 print("Error getting photos: \(errorString)")
             }
         }
@@ -366,9 +351,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 
     @IBAction func newCollectionButtonPressed(sender: AnyObject) {
         deleteAllPhotos()
-        CoreDataStackManager.sharedInstance().saveContext()
+        //CoreDataStackManager.sharedInstance().saveContext()
         getPhotos()
         collectionView.reloadData()
+        print("Data reloaded")
     }
 
 
