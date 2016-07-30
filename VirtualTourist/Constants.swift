@@ -17,7 +17,8 @@ struct Constants {
     
     // Core data model constants
     struct CDModel {
-        static let SQLFileName = "model"
+        static let ModelName = "Model"
+        static let SQLFileName = "Model.sqlite"
     }
     
     // Flickr URL API parameters

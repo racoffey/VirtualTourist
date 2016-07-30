@@ -16,7 +16,7 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
     
     var pin : Pin? = nil
     
-    var sharedContext = CoreDataStackManager.sharedInstance().managedObjectContext!
+    var sharedContext = CoreDataStackManager.sharedInstance().context 
     
  //   let stack = delegate.stack
     var nextPinNumber : Int = 0
@@ -53,18 +53,6 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         gestureRecognizer.delegate = self
         mapView.addGestureRecognizer(gestureRecognizer)
 
- /*       // Create a fetchrequest
-        let fr = NSFetchRequest(entityName: "Pin")
-        fr.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        //                      NSSortDescriptor(key: "creationDate", ascending: false)]
-        
-        // Create the FetchedResultsController
-        //let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr,managedObjectContext: delegate.stack.context, sectionNameKeyPath: nil, cacheName: nil)
-        
-        let fetchedResultsController = NSFetchedResultsController(fetchRequest: fr, managedObjectContext: sharedContext, sectionNameKeyPath: nil, cacheName: nil)
-        
-        //let ip = NSIndexPath.init(index: 0)
-*/
         // Start the fetched results controller
 
         fetchResults()
@@ -182,18 +170,23 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             // Add annotation to map
             mapView.addAnnotation(pin!)
             nextPinNumber += 1
-            CoreDataStackManager.sharedInstance().saveContext()
+            CoreDataStackManager.sharedInstance().save()
         
         }
     }
     
     
-    //Present messages to user
-    func displayError(error: String) {
+    //Present message to user
+    func displayError(error: String, debugLabelText: String? = nil) {
+        print(error)
+        
         // Show error to user using Alert Controller
         let alert = UIAlertController(title: "Error", message: error, preferredStyle: UIAlertControllerStyle.Alert)
         alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.Default, handler: nil ))
         self.presentViewController(alert, animated: true, completion: nil)
+        
+        // Ensure UI is fully enabled again
+     //   setUIEnabled(true)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

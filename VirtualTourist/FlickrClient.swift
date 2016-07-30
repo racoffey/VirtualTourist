@@ -67,14 +67,16 @@ class FlickrClient : NSObject {
             
             // Handle error case
             if error != nil {
-                completionHandlerForSession(success: false, errorString: "Failed to get student locations. \(error)")
+                completionHandlerForSession(success: false, errorString: "Failed to get photos. \(error)")
             } else {
                 //Put results into a data object and extract each student location into the Student Locations array and return array
                 //AppData.sharedInstance().photos.removeAll()
                 var resultsDict = results as! [String: AnyObject]
                 let photoResults = resultsDict["photos"] as! [String: AnyObject]
                 let photosArray = photoResults["photo"] as! [AnyObject]
-
+                if photosArray.endIndex == 0 {
+                    completionHandlerForSession(success: false, errorString: "No photos are available for this location!")
+                }
                 for item in photosArray {
                     let dict = item as! [String: AnyObject]
                     //let photo = dict["title"] as! String
@@ -90,7 +92,8 @@ class FlickrClient : NSObject {
                     
                     print("Photo being saved to Core Data: \(photo.title)")
                  }
-                CoreDataStackManager.sharedInstance().saveContext()
+                
+                CoreDataStackManager.sharedInstance().save()
                  /*AppData.sharedInstance().hasFetchedStudentLocations = true
                  completionHandlerForSession(success: true, studentLocations: AppData.sharedInstance().studentLocations, errorString: nil)*/
             }
@@ -120,7 +123,7 @@ class FlickrClient : NSObject {
             
             //Was there an error?
             guard (error == nil) else {
-                sendError("The parse GET request failed.")
+                sendError("The HTTP GET request failed. Check network connection!")
                 return
             }
             

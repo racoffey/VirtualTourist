@@ -27,29 +27,21 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var newCollectionButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var pin : Pin? = nil
-    var page : Int = 1
     
     //let delegate = UIApplication.sharedApplication().delegate as! AppDelegate
     
-    var sharedContext = CoreDataStackManager.sharedInstance().managedObjectContext!
+    var sharedContext = CoreDataStackManager.sharedInstance().context
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
-        
+        activityIndicator.hidden = false
+        print("Initial pin page = \(pin!.page)")
         
         // Start the fetched results controller
-        var error: NSError?
-        do {
-            try fetchedResultsController.performFetch()
-        } catch let error1 as NSError {
-            error = error1
-        }
-        
-        if let error = error {
-            print("Error performing initial fetch: \(error)")
-        }
+        fetchResults()
         
         let count = (fetchedResultsController.fetchedObjects?.count)! as Int
         
@@ -58,8 +50,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         if count < 1 {
             print("Need to get photos!")
             getPhotos()
+        } else {
+            activityIndicator.hidden = true
         }
         
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        self.view.addSubview(collectionView)
         
     }
     
@@ -78,20 +75,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                 mapView.setCenterCoordinate((pin?.coordinate)!, animated: true)
             }
         }
-        
-        // Set the title
-        title = "Photo Album"
-        
 
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        self.view.addSubview(collectionView)
+
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -104,8 +91,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         layout.minimumInteritemSpacing = 0
         
         let width = floor(self.collectionView.frame.size.width/3)
+        print("Width = \(width)")
         layout.itemSize = CGSize(width: width, height: width)
         collectionView.collectionViewLayout = layout
+    }
+    
+    func fetchResults () {
+        var error: NSError?
+        do {
+            try fetchedResultsController.performFetch()
+        } catch let error1 as NSError {
+            error = error1
+        }
+        
+        if let error = error {
+            displayError("Error performing fetch of photos: \(error)")
+        }
     }
     
     // MARK: - Configure Cell
@@ -133,15 +134,15 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         print ("Number of sections = \(fetchedResultsController.sections?.count)")
-        //return self.fetchedResultsController.sections?.count ?? 1
-        let numberOfSections: Int = 1
-        return numberOfSections
+        return self.fetchedResultsController.sections?.count ?? 1
+        //let numberOfSections: Int = 1
+        //return numberOfSections
     }
     
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         //let sectionInfo = self.fetchedResultsController.sections![section]
         // Start the fetched results controller
-        var error: NSError?
+/*        var error: NSError?
         do {
             try fetchedResultsController.performFetch()
         } catch let error1 as NSError {
@@ -151,7 +152,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         if let error = error {
             print("Error performing initial fetch: \(error)")
         }
-        
+ 
+        fetchResults()
+ */
         let numberOfObjects = (fetchedResultsController.fetchedObjects?.count)! as Int
         print("number Of Cells: \(numberOfObjects)")
         return numberOfObjects
@@ -166,13 +169,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
         
         print("Photo to add = \(photo.title)")
-        //print("Photo image = \(photo.image)")
         if (photo.image != nil) {
             
-            let imageView = UIImageView(frame: CGRectMake(0, 0, collectionView.frame.size.width/3-1, collectionView.frame.size.width/3-1))
+            let imageView = UIImageView(frame: CGRectMake(0, 0, collectionView.frame.size.width/3-2, collectionView.frame.size.width/3-2))
             
             let image = UIImage(data: photo.image!)!
-            //let image = UIImage(contentsOfFile: <#T##String#>)
             
             imageView.image = image
             cell.contentView.addSubview(imageView)
@@ -306,8 +307,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             
             }, completion: nil)
         
+        fetchResults()
+        print("Fetching results")
         collectionView.reloadData()
         print("Reloading data in DidChangeContent")
+        collectionView.reloadInputViews()
     }
     
     func deleteAllPhotos() {
@@ -327,37 +331,56 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
         for photo in photosToDelete {
             sharedContext.deleteObject(photo)
-            CoreDataStackManager.sharedInstance().saveContext()
+            CoreDataStackManager.sharedInstance().save()
         }
         
        // selectedIndexes = [NSIndexPath]()
     }
     
     func getPhotos() {
-        print("Getting photos with pin: \(pin!)")
+        let page = getPage()
+        print("Getting photos with pin: \(pin!) and page: \(page)" )
         FlickrClient.sharedInstance().getPhotos(sharedContext, pin: pin!, page: page) { (success, errorString) in
             if success {
                 self.collectionView.reloadData()
                 print("Data reloaded")
-                //CoreDataStackManager.sharedInstance().saveContext()
-                self.page += 1
+                self.activityIndicator.hidden = true
             } else {
-                print("Error getting photos: \(errorString)")
+                self.activityIndicator.hidden = true
+                self.displayError(errorString!)
             }
         }
+    }
+    
+    func getPage() -> Int {
+          let pageNumber = Int(arc4random_uniform(100) + 1)
+        return pageNumber
+    }
+    
+    //Present message to user
+    func displayError(error: String) {
+        print(error)
+        
+        // Show error to user using Alert Controller
+        let alert = UIAlertController(title: "Information", message: error, preferredStyle: UIAlertControllerStyle.Alert)
+        alert.addAction(UIAlertAction(title: "Click", style: UIAlertActionStyle.Default, handler: nil ))
+        self.presentViewController(alert, animated: true, completion: nil)
+        
+        // Ensure UI is fully enabled again
+        //   setUIEnabled(true)
     }
     
     
 
     @IBAction func newCollectionButtonPressed(sender: AnyObject) {
+        print("New collection button pressed")
+        activityIndicator.hidden = false
         deleteAllPhotos()
         //CoreDataStackManager.sharedInstance().saveContext()
         getPhotos()
-        collectionView.reloadData()
+        //collectionView.reloadData()
         print("Data reloaded")
     }
-
-
 }
 
 

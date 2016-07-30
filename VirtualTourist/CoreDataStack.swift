@@ -7,7 +7,7 @@
 //
 
 import CoreData
-
+/*
 struct CoreDataStack {
     
     // MARK:  - Properties
@@ -176,4 +176,5 @@ extension CoreDataStack {
         }
     }
 }
+ */
 

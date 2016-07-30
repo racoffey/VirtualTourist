@@ -7,14 +7,13 @@
 //
 
 import Foundation
-
+/*
 // Class for data that shall be available across the app
 class AppData {
     
     // Properties
     var photos: [Photo] = []
     var hasFetchedPhotos = false
-    
     
     class func sharedInstance() -> AppData {
         struct Singleton {
@@ -23,3 +22,4 @@ class AppData {
         return Singleton.sharedInstance
     }
 }
+ */

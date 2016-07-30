@@ -1,10 +1,8 @@
-
-
 //
 //  Pin.swift
 //  VirtualTourist
 //
-//  Created by Robert Coffey on 07/07/2016.
+//  Created by Robert Coffey on 30/07/2016.
 //  Copyright © 2016 Robert Coffey. All rights reserved.
 //
 
@@ -28,6 +26,7 @@ class Pin: NSManagedObject, MKAnnotation {
             self.name = name;
             self.latitude = latitude
             self.longitude = longitude
+            self.page = 1
             
             print("Reached Pin")
             self.creationDate = NSDate()

@@ -13,8 +13,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     
-    let stack = CoreDataStack(modelName: "Model")!
-    //let s = CoreDataStackManager.sharedInstance().
+    //let stack = CoreDataStack(modelName: "Model")!
+    let stackManager = CoreDataStackManager.sharedInstance()
     
 /*    func preloadData(){
         
@@ -103,7 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //preloadData()
         
         // Start Autosaving
-        stack.autoSave(60)
+        stackManager.autoSave(60)
         
         // add new objects in the background
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (Int64)(5 * NSEC_PER_SEC)), dispatch_get_main_queue()){
@@ -115,13 +115,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-        stack.save()
+        stackManager.save()
     }
 
     func applicationDidEnterBackground(application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        stack.save()
+        stackManager.save()
     }
 
     func applicationWillEnterForeground(application: UIApplication) {

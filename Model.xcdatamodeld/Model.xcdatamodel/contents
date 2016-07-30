@@ -19,10 +19,11 @@
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="name" attributeType="String" indexed="YES" syncable="YES"/>
+        <attribute name="page" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo" syncable="YES"/>
     </entity>
     <elements>
         <element name="Photo" positionX="-54" positionY="18" width="128" height="225"/>
-        <element name="Pin" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="Pin" positionX="-63" positionY="-18" width="128" height="135"/>
     </elements>
 </model>
