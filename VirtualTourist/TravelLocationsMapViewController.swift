@@ -52,6 +52,7 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action:#selector(TravelLocationsMapViewController.handleTap(_:)))
         gestureRecognizer.delegate = self
         mapView.addGestureRecognizer(gestureRecognizer)
+        
 
         // Start the fetched results controller
 
@@ -128,9 +129,12 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
         }
         view.canShowCallout = false
+        view.draggable = true
         //Return the annotation view
         return view
     }
+    
+    
     
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
@@ -146,15 +150,64 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
     
     
     
+    
     func mapViewDidFinishRenderingMap(mapView: MKMapView, fullyRendered: Bool){
         activityIndicator.hidden = true
     }
     
     func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {
         //gestureRecognizer.state
+        var annotationToBeAdded: Pin? = nil
         print("Reached handleTap \(gestureRecognizer.state.hashValue)")
-        if gestureRecognizer.state.hashValue == 1 {
-            let location = gestureRecognizer.locationInView(mapView)
+        var location = gestureRecognizer.locationInView(mapView)
+        var coordinate = mapView.convertPoint(location, toCoordinateFromView: mapView)
+        
+        switch gestureRecognizer.state {
+        case .Began:
+            print("began gesture state")
+//            annotationToBeAdded = Annotation()
+//            annotationToBeAdded.setCoordinate(newCoordinates)
+//            mapView.addAnnotation(annotation)
+//            let pin = Pin(entity: coordinate, insertIntoManagedObjectContext: self.sharedContext)
+            
+            // Create the pin in Core Data
+            pin = Pin(name: "pin \(nextPinNumber)", latitude: coordinate.latitude, longitude: coordinate.longitude, context: sharedContext)
+            print("Just created a pin: \(pin!.name)")
+            
+            mapView.addAnnotation(pin!)
+            nextPinNumber += 1
+            
+        case .Changed:
+            print("changed gesture state")
+            pin!.setCoordinate(coordinate.latitude, longitude: coordinate.longitude)
+            mapView.removeAnnotation(pin!)
+            mapView.addAnnotation(pin!)
+            
+            
+        case .Ended:
+            print("ended gesture state")
+            pin?.setCoordinate(coordinate.latitude, longitude: coordinate.longitude)
+            mapView.removeAnnotation(pin!)
+            mapView.addAnnotation(pin!)
+            CoreDataStackManager.sharedInstance().save()
+            // Download images as soon as pin is placed
+            getPhotos()
+            
+        default:
+            return
+        }
+    }
+    
+        
+        
+/*
+        let annotationView = pin as! MKAnnotation
+        switch gestureRecognizer.state.hashValue {
+        case 1:
+            pin?.
+        }
+        if gestureRecognizer.state.hashValue == 3 {
+
             let coordinate = mapView.convertPoint(location,toCoordinateFromView: mapView)
         
 /*            // Add annotation:
@@ -171,9 +224,24 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
             mapView.addAnnotation(pin!)
             nextPinNumber += 1
             CoreDataStackManager.sharedInstance().save()
-        
+            
+            // Download images as soon as pin is placed
+            getPhotos()
+        }
+    }*/
+    
+    func getPhotos() {
+        let page = 1
+        print("Getting photos from Travel Location View Controller with pin: \(pin!) and page: \(page)" )
+        FlickrClient.sharedInstance().getPhotos(sharedContext, pin: pin!, page: page) { (success, errorString) in
+            if success {
+                return
+            } else {
+                self.displayError(errorString!)
+            }
         }
     }
+    
     
     
     //Present message to user

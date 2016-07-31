@@ -27,6 +27,7 @@ class Pin: NSManagedObject, MKAnnotation {
             self.latitude = latitude
             self.longitude = longitude
             self.page = 1
+
             
             print("Reached Pin")
             self.creationDate = NSDate()
@@ -43,6 +44,16 @@ class Pin: NSManagedObject, MKAnnotation {
     var coordinate: CLLocationCoordinate2D {
         let coordinate = CLLocationCoordinate2DMake(self.latitude as! CLLocationDegrees, self.longitude as! CLLocationDegrees)
         return coordinate
+    }
+    
+    func setCoordinate(latitude: Double, longitude: Double) {
+        willChangeValueForKey("latitude")
+        self.latitude = latitude
+        didChangeValueForKey("latitude")
+        
+        willChangeValueForKey("longitude")
+        self.longitude = longitude
+        didChangeValueForKey("longitude")
     }
     
 }

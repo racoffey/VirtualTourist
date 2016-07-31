@@ -19,16 +19,6 @@ class FlickrClient : NSObject {
     var session = NSURLSession.sharedSession()
    // let pin : Pin?
     
-   // let stack = CoreDataStack(modelName: "Model")!
-   // let p = Pin(name: "Hello", context: stack.context)
-    
-   // if let context = fetchedResultsController?.managedObjectContext{
-        
-        // Just create a new note and you're done!
-   //     let pin = Pin(text: "New Note", context: fetchedResultsController?,managedObjectContext)
-        //note.notebook = nb
-        
-   // }
     
     // Initializers
     
@@ -56,11 +46,6 @@ class FlickrClient : NSObject {
              Constants.FlickrRequestKeys.Longitude : pin.longitude!,
              Constants.FlickrRequestKeys.Page : page]
         
-        //If student locations have already been fetched, no need to fetch again unless specific refresh requested
-        /*       if AppData.sharedInstance().hasFetchedStudentLocations {
-         completionHandlerForSession(success: true, studentLocations: AppData.sharedInstance().studentLocations, errorString: nil)
-         return
-         }*/
         
         //Execute GET method
         taskForGETMethod(method, parameters: parameters) { (results, error) in
@@ -150,80 +135,7 @@ class FlickrClient : NSObject {
         return task
     }
     
-/*
-    // POST method
-    func taskForPOSTMethod(method: String, var parameters: [String:AnyObject], jsonBody: String, completionHandlerForPOST: (result: AnyObject!, error: NSError?) -> Void) -> NSURLSessionDataTask {
-        
-        
-        // Build the URL based on header parameter and json body input
-        let request = NSMutableURLRequest(URL: parseURLFromParameters(parameters, withPathExtension: method))
-        request.HTTPMethod = "POST"
-        request.addValue(Constants.ParseParameterValues.ApplicationID, forHTTPHeaderField: Constants.ParseParameterKeys.ApplicationID)
-        request.addValue(Constants.ParseParameterValues.ApiKey, forHTTPHeaderField: Constants.ParseParameterKeys.ApiKey)
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.HTTPBody = jsonBody.dataUsingEncoding(NSUTF8StringEncoding)
-        
-        // Prepare request task
-        let task = session.dataTaskWithRequest(request) { (data, response, error) in
-            
-            func sendError(error: String) {
-                let userInfo = [NSLocalizedDescriptionKey : error]
-                completionHandlerForPOST(result: nil, error: NSError(domain: "taskForPOSTMethod", code: 1, userInfo: userInfo))
-            }
-            
-            // GUARD: Was there an error?
-            guard (error == nil) else {
-                sendError("The POST method failed. \(error)")
-                return
-            }
-            
-            // GUARD: Did we get a successful 2XX response?
-            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-                sendError("Your POST request returned a status code other than 2xx!")
-                return
-            }
-            
-            // GUARD: Was there any data returned?
-            guard let data = data else {
-                sendError("No data was returned by the POST request!")
-                return
-            }
-            
-            
-            // Parse the data and return the resulting data
-            self.convertDataWithCompletionHandler(data, completionHandlerForConvertData: completionHandlerForPOST)
-        }
-        
-        //Initiate the request
-        task.resume()
-        
-        return task
-    }
-    
-    
-    
-    func postStudentLocation(bodyParameters: [String: AnyObject], completionHandlerForPostSL: (success: Bool, errorString: String?) -> Void) {
-        
-        //Prepare input parameters to POST request
-        let parameters: [String: AnyObject] = [:]
-        let method = "/StudentLocation"
-        let jsonBody = covertToJson(bodyParameters)
-        
-        // Prepare request task using parameters
-        taskForPOSTMethod(method, parameters: parameters, jsonBody: jsonBody) { (results, error) in
-            
-            //Handle error case
-            if let error = error {
-                print(error.localizedDescription)
-                completionHandlerForPostSL(success: false, errorString: error.localizedDescription)
-            } else {
-                //If no error then report back that request successfully executed
-                completionHandlerForPostSL(success: true, errorString: nil)
-            }
-        }
-    }
-    
-*/
+
     // Assisting functions
     
     // Create JSON string based on parameters dictionary
