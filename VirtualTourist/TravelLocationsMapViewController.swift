@@ -48,6 +48,9 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
         
         mapView.delegate = self
         activityIndicator.hidden = false
+        activityIndicator.startAnimating()
+        activityIndicator.hidesWhenStopped = true
+        
         
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action:#selector(TravelLocationsMapViewController.handleTap(_:)))
         gestureRecognizer.delegate = self
@@ -68,6 +71,14 @@ class TravelLocationsMapViewController: UIViewController, NSFetchedResultsContro
                 mapView.addAnnotation(pin)
             }
         }
+    }
+    
+    override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -152,7 +163,7 @@ extension TravelLocationsMapViewController: MKMapViewDelegate, UIGestureRecogniz
     
     
     func mapViewDidFinishRenderingMap(mapView: MKMapView, fullyRendered: Bool){
-        activityIndicator.hidden = true
+        activityIndicator.stopAnimating()
     }
     
     func handleTap(gestureRecognizer: UILongPressGestureRecognizer) {

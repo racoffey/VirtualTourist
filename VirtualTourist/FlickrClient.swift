@@ -67,23 +67,37 @@ class FlickrClient : NSObject {
                     //let photo = dict["title"] as! String
 
                     let photo = Photo(title: dict["title"] as! String, url_m: dict["url_m"] as! String, context: context)
+                    
+                    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)){
                     if let url  = NSURL(string: photo.url_m!),
                         data = NSData(contentsOfURL: url)
                     {
                         photo.image = data
                     }
+                    }
                     
+                
                     photo.pin = pin
                     
                     print("Photo being saved to Core Data: \(photo.title)")
                  }
                 
                 CoreDataStackManager.sharedInstance().save()
+                
+                completionHandlerForSession(success: true, errorString: nil)
                  /*AppData.sharedInstance().hasFetchedStudentLocations = true
                  completionHandlerForSession(success: true, studentLocations: AppData.sharedInstance().studentLocations, errorString: nil)*/
             }
         }
     }
+    
+/*    func getImage(pin: Pin) {
+        for item in pin {
+            let photo = item as! Photo
+            
+        }
+        
+    }*/
     
     
     // GET method

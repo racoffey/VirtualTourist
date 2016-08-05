@@ -12,14 +12,10 @@ import MapKit
 
 
 class Pin: NSManagedObject, MKAnnotation {
-    
-    // Insert code here to add functionality to your managed object subclass
-    
+
+    //Initiate Pin object including Entity Description
     convenience init(name: String, latitude: Double, longitude: Double, context: NSManagedObjectContext){
-        
-        // An EntityDescription is an object that has access to all
-        // the information you provided in the Entity part of the model
-        // you need it to create an instance of this class.
+
         if let ent = NSEntityDescription.entityForName("Pin",
                                                        inManagedObjectContext: context){
             self.init(entity: ent, insertIntoManagedObjectContext: context)

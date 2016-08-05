@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 
 class Photo: NSManagedObject {
@@ -44,5 +45,12 @@ class Photo: NSManagedObject {
             return fmt.stringFromDate(date_taken!)
         }
     }
+    
+/*    func setImage(image: NSData) {
+        willChangeValueForKey("image")
+        self.image = image
+        didChangeValueForKey("image")
+    }*/
+    
     
 }

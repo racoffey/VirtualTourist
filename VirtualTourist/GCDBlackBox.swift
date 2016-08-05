@@ -7,7 +7,7 @@
 //
 
 import Foundation
-/*
+
 // Used to handle UI activity using main thread
 func performUIUpdatesOnMain(updates: () -> Void) {
     dispatch_async(dispatch_get_main_queue()) {
@@ -20,4 +20,4 @@ func performUIUpdatesOnBackground(updates: () ->Void) {
         updates()
     }
 }
- */
+ 

@@ -35,9 +35,20 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     var sharedContext = CoreDataStackManager.sharedInstance().context
     
+    
+    override func shouldAutorotate() -> Bool {
+        return false
+    }
+    
+    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait
+    }
+    
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(true)
         activityIndicator.hidden = false
+        activityIndicator.startAnimating()
+        activityIndicator.hidesWhenStopped = true
         print("Initial pin page = \(pin!.page)")
         
         // Start the fetched results controller
@@ -51,7 +62,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             print("Need to get photos!")
             getPhotos()
         } else {
-            activityIndicator.hidden = true
+            activityIndicator.stopAnimating()
+            print("setPlaceHolder set as false")
         }
         
         collectionView.delegate = self
@@ -74,11 +86,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
                 mapView.addAnnotation(pin!)
                 mapView.setCenterCoordinate((pin?.coordinate)!, animated: true)
             }
+            //setPlaceholders = false
+            //self.registerClass(PhotoCell.self, forCellWithReuseIdentifier: Constants.CellReuseIdentifier)
+            //self.registerClass(PhotoCell.self, forCellWithReuseIdentifier: Constants.PlaceholderCellReuseIdentifier)
+
         }
-
-
     }
     
+
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -115,7 +130,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
         //let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
-        cell.color = UIColor.whiteColor()
+        cell.color = UIColor.blackColor()
         
         // If the cell is "selected" it's color panel is grayed out
         // we use the Swift `find` function to see if the indexPath is in the array
@@ -155,6 +170,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
  
         fetchResults()
  */
+
         let numberOfObjects = (fetchedResultsController.fetchedObjects?.count)! as Int
         print("number Of Cells: \(numberOfObjects)")
         return numberOfObjects
@@ -162,22 +178,46 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        print("Reached cell for Item at Indext Path")
+        print("Reached cell for Item at Index Path: \(indexPath)")
         // Get the note
         let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
         
-        print("Photo to add = \(photo.title)")
+/*        if setPlaceholders {
+            print("setPlaceholder true and being placed")
+            let imageView = UIImageView(frame: CGRectMake(1, 1, collectionView.frame.size.width/3-1, collectionView.frame.size.width/3-1))
+            let image = UIImage(named: "placeholder.png")
+            //imageView.contentMode = .ScaleAspectFit
+            imageView.image = image
+            cell.contentView.addSubview(imageView)
+            print("Placeholder cell added for indexpath: \(indexPath)")
+            if indexPath.length == 12 {
+                setPlaceholders = false
+                print("Index path = 12 so setting setPlaceholder to false")
+            }
+        } else {
+  */
+        print("Photo to add = \(photo.title) at indexpath: \(indexPath)" )
+        //cell.delete(self)
+        
+        let imageView = UIImageView(frame: CGRectMake(0, 0, collectionView.frame.size.width/3-2, collectionView.frame.size.width/3-2))
+        
         if (photo.image != nil) {
             
-            let imageView = UIImageView(frame: CGRectMake(0, 0, collectionView.frame.size.width/3-2, collectionView.frame.size.width/3-2))
-            
             let image = UIImage(data: photo.image!)!
+            //let image = UIImage(contentsOfFile: "default-placeholder.png")
+            //let image = UIImage(named: "placeholder.png")
             
+            //imageView.contentMode = .ScaleAspectFit
             imageView.image = image
             cell.contentView.addSubview(imageView)
             print("Added image for \(photo.title)")
+        } else {
+            let image = UIImage(named: "placeholder-2.png")
+            imageView.image = image
+            cell.contentView.addSubview(imageView)
+            print("Added placeholder for \(indexPath)")
         }
         
         //self.configureCell(cell, atIndexPath: indexPath)
@@ -341,15 +381,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         let page = getPage()
         print("Getting photos with pin: \(pin!) and page: \(page)" )
         FlickrClient.sharedInstance().getPhotos(sharedContext, pin: pin!, page: page) { (success, errorString) in
+            print("Returned from FlickrClient")
             if success {
                 self.collectionView.reloadData()
-                print("Data reloaded")
-                self.activityIndicator.hidden = true
+                print("Data reloaded in getPhotos")
+                //performUIUpdatesOnMain {
+                //}
+                print("Activity indicator stopped")
             } else {
-                self.activityIndicator.hidden = true
                 self.displayError(errorString!)
             }
+            performUIUpdatesOnMain({
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.hidden = true
+                self.newCollectionButton.enabled = true
+            })
         }
+
     }
     
     func getPage() -> Int {
@@ -375,6 +423,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBAction func newCollectionButtonPressed(sender: AnyObject) {
         print("New collection button pressed")
         activityIndicator.hidden = false
+        activityIndicator.startAnimating()
+        newCollectionButton.enabled = false
         deleteAllPhotos()
         //CoreDataStackManager.sharedInstance().saveContext()
         getPhotos()
