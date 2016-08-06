@@ -15,6 +15,8 @@ func performUIUpdatesOnMain(updates: () -> Void) {
     }
 }
 
+
+// Used to handle UI activity using background thread
 func performUIUpdatesOnBackground(updates: () ->Void) {
     dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)) {
         updates()

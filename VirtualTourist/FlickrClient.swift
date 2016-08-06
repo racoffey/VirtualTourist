@@ -11,26 +11,19 @@ import UIKit
 import CoreData
 
 
-// Parse API client
+// Flickr API client
 
 class FlickrClient : NSObject {
     
     // Shared session
     var session = NSURLSession.sharedSession()
-   // let pin : Pin?
+
     
+    // Request photos related to Pin location from Flickr
+    func getPhotos(context: NSManagedObjectContext, pin: Pin, completionHandlerForSession: (success: Bool, errorString: String?) -> Void) {
     
-    // Initializers
-    
-    override init() {
-        //AppData.sharedInstance().photos = []
-        super.init()
-    }
-    
-    
-    // Get a number of the last student locations
-    func getPhotos(context: NSManagedObjectContext, pin: Pin, page: Int, completionHandlerForSession: (success: Bool, errorString: String?) -> Void) {
-    
+        // General random page number between 1 and maxPages
+        let page = Int(arc4random_uniform(Constants.General.maxPages) + 1)
         
         //Establish parameters for GET request
         let method = ""
@@ -54,50 +47,42 @@ class FlickrClient : NSObject {
             if error != nil {
                 completionHandlerForSession(success: false, errorString: "Failed to get photos. \(error)")
             } else {
-                //Put results into a data object and extract each student location into the Student Locations array and return array
-                //AppData.sharedInstance().photos.removeAll()
+                //Put results into a data object, extract photos into photoResults and then individual photos into Photos array
                 var resultsDict = results as! [String: AnyObject]
                 let photoResults = resultsDict["photos"] as! [String: AnyObject]
                 let photosArray = photoResults["photo"] as! [AnyObject]
                 if photosArray.endIndex == 0 {
                     completionHandlerForSession(success: false, errorString: "No photos are available for this location!")
                 }
+                
+                // Create Core Data Photo object for each photo in array in memory
                 for item in photosArray {
                     let dict = item as! [String: AnyObject]
-                    //let photo = dict["title"] as! String
 
                     let photo = Photo(title: dict["title"] as! String, url_m: dict["url_m"] as! String, context: context)
                     
-                    dispatch_async(dispatch_get_global_queue(QOS_CLASS_BACKGROUND, 0)){
-                    if let url  = NSURL(string: photo.url_m!),
-                        data = NSData(contentsOfURL: url)
-                    {
-                        photo.image = data
-                    }
-                    }
-                    
-                
+                    // Define parent Pin in Photo object
                     photo.pin = pin
                     
-                    print("Photo being saved to Core Data: \(photo.title)")
+                    // Download images on background thread and update Core Data Photo object when downloaded
+                    performUIUpdatesOnBackground({
+                        if let url  = NSURL(string: photo.url_m!),
+                            data = NSData(contentsOfURL: url)
+                        {
+                            photo.image = data
+                        }
+                    })
                  }
                 
+                // Save changes to Core Data
                 CoreDataStackManager.sharedInstance().save()
                 
+                // Successfully complete session
                 completionHandlerForSession(success: true, errorString: nil)
-                 /*AppData.sharedInstance().hasFetchedStudentLocations = true
-                 completionHandlerForSession(success: true, studentLocations: AppData.sharedInstance().studentLocations, errorString: nil)*/
             }
         }
     }
     
-/*    func getImage(pin: Pin) {
-        for item in pin {
-            let photo = item as! Photo
-            
-        }
-        
-    }*/
     
     
     // GET method
@@ -105,14 +90,9 @@ class FlickrClient : NSObject {
         
         //Construct the URL request using input parameters
         let request = NSMutableURLRequest(URL: parseURLFromParameters(parameters, withPathExtension: method))
-        print (request)
 
-        
         //Prepare the request task
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
-            
-            print("Data: \(data)")
-            print("Response: \(response)")
             
             func sendError(error: String) {
                 print("Error : \(error)")
@@ -212,7 +192,7 @@ class FlickrClient : NSObject {
     }
     
     
-    // MARK: Shared Instance
+    // Shared Instance
     
     class func sharedInstance() -> FlickrClient {
         struct Singleton {

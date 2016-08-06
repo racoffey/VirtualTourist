@@ -14,12 +14,18 @@ import MapKit
 
 struct Constants {
     
+    // General constants
+    struct General {
+        static let maxPages : UInt32 = 100
+    }
+    
     // Core data model constants
     struct CDModel {
         static let ModelName = "Model"
         static let SQLFileName = "Model.sqlite"
     }
     
+
     // Flickr URL API parameters
     struct Flickr {
         static let ApiScheme = "https"
@@ -66,29 +72,11 @@ struct Constants {
         static let SafeSearch = "1"
         static let PerPage = "12"
         static let Method = "flickr.photos.search"
-    
     }
     
-    
-    // UI attriutes
-    struct UI {
-        static let LoginColorTop = UIColor(red: 0.900, green: 0.300, blue: 0.100, alpha: 1.0).CGColor
-        static let LoginColorBottom = UIColor(red: 0.8, green: 0.5, blue: 0.3, alpha: 1.0).CGColor
-        static let GreyColor = UIColor(red: 0.702, green: 0.863, blue: 0.929, alpha:1.0)
-        static let BlueColor = UIColor(red: 0.0, green:0.502, blue:0.839, alpha: 1.0)
-    }
-    
-    // Selectors
-    struct Selectors {
-        static let KeyboardWillShow: Selector = "keyboardWillShow:"
-        static let KeyboardWillHide: Selector = "keyboardWillHide:"
-        static let KeyboardDidShow: Selector = "keyboardDidShow:"
-        static let KeyboardDidHide: Selector = "keyboardDidHide:"
-    }
     
     // Map attributes
     struct Map {
         static let RegionRadius: CLLocationDistance  = 1000000
     }
-    
 }
