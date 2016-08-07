@@ -18,7 +18,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     // Arrays to keep track of insertions, deletions, and updates.
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
-    var updatedIndexPaths: [NSIndexPath]!
+    var updatedIndexPaths: [NSIndexPath]! 
 
     // Outlets
     @IBOutlet weak var mapView: MKMapView!
