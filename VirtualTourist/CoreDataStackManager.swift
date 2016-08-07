@@ -20,8 +20,6 @@ class CoreDataStackManager {
     let directoryURL : NSURL
     let modelURL : NSURL
     let dbURL : NSURL
-    let persistingContext : NSManagedObjectContext
-    let backgroundContext : NSManagedObjectContext
     let context : NSManagedObjectContext
     
     // Shared Instance
@@ -46,7 +44,6 @@ class CoreDataStackManager {
         //Instantiating the persistant Store Coordinator and adding SQL Lite DB
         self.coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
         self.dbURL = directoryURL.URLByAppendingPathComponent(Constants.CDModel.SQLFileName)
-        print("sqlite path: \(dbURL.path!)")
         var error: NSError? = nil
         
         do {
@@ -60,29 +57,15 @@ class CoreDataStackManager {
             dict[NSLocalizedFailureReasonErrorKey] = "There was an error creating or loading the application's saved data."
             dict[NSUnderlyingErrorKey] = error
             error = NSError(domain: "Model", code: 9999, userInfo: dict as! [NSObject : AnyObject])
-            
-            // Left in for development development.
-            NSLog("Unresolved error \(error), \(error!.userInfo)")
             abort()
         } catch {
             fatalError()
         }
         
-        
-        //Instantiating the Managed Object Context property, including persistent and background contexts
-        
-        // Create a persistingContext (private queue) and a child one (main queue)
-        // create a context and add connect it to the coordinator
-        persistingContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
-        persistingContext.persistentStoreCoordinator = coordinator
-        
+        //Instantiating the Managed Object Context property and connecting it to the coordinator
         context = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
-        context.parentContext = persistingContext
+        context.persistentStoreCoordinator = coordinator
         
-        // Create a background context child of main context
-        backgroundContext = NSManagedObjectContext(concurrencyType: .PrivateQueueConcurrencyType)
-        backgroundContext.parentContext = context
-
    }
 }
 
@@ -99,26 +82,9 @@ extension CoreDataStackManager  {
     }
     
     
-    //Functions to support background batch operations
-    typealias Batch=(workerContext: NSManagedObjectContext) -> ()
-    
-    func performBackgroundBatchOperation(batch: Batch){
-        
-        backgroundContext.performBlock(){
-            batch(workerContext: self.backgroundContext)
-            
-            // Save it to the parent context, so normal saving
-            // can work
-            do{
-                try self.backgroundContext.save()
-            }catch{
-                fatalError("Error while saving backgroundContext: \(error)")
-            }
-        }
-    }
     
     func save() {
-        // Saves main context synchronosly and persisting context in the background
+        // Saves main context synchronosly
         context.performBlockAndWait(){
             
             if self.context.hasChanges{
@@ -126,15 +92,6 @@ extension CoreDataStackManager  {
                     try self.context.save()
                 }catch{
                     fatalError("Error while saving main context: \(error)")
-                }
-                
-                // now we save in the background
-                self.persistingContext.performBlock(){
-                    do{
-                        try self.persistingContext.save()
-                    }catch{
-                        fatalError("Error while saving persisting context: \(error)")
-                    }
                 }
             }
         }
@@ -144,7 +101,6 @@ extension CoreDataStackManager  {
     func autoSave(delayInSeconds : Int){
         
         if delayInSeconds > 0 {
-            print("Autosaving")
             save()
             
             let delayInNanoSeconds = UInt64(delayInSeconds) * NSEC_PER_SEC

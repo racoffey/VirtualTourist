@@ -63,7 +63,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             getPhotos()
         } else {
             activityIndicator.stopAnimating()
-            print("setPlaceHolder set as false")
         }
         
         // Add collection view delegate and data source
@@ -103,7 +102,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         layout.minimumInteritemSpacing = 0
         
         let width = floor(self.collectionView.frame.size.width/3)
-        print("Width = \(width)")
         layout.itemSize = CGSize(width: width, height: width)
         collectionView.collectionViewLayout = layout
     }
@@ -179,7 +177,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         fetchRequest.sortDescriptors = []
         
         //Select only the photos for the give Pin
-        print("Pin before predicate = \(self.pin)")
         let pred = NSPredicate(format: "pin = %@", argumentArray: [self.pin!])
         fetchRequest.predicate = pred
         

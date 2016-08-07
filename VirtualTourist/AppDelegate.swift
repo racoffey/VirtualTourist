@@ -15,6 +15,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     let stackManager = CoreDataStackManager.sharedInstance()
     
+    // App only supports portrait mode
+    func application(application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {
+        return UIInterfaceOrientationMask.Portrait
+    }
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         
