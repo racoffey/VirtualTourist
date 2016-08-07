@@ -82,7 +82,6 @@ extension CoreDataStackManager  {
     }
     
     
-    
     func save() {
         // Saves main context synchronosly
         context.performBlockAndWait(){

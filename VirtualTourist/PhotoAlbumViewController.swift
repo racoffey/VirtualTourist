@@ -59,7 +59,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         // If there are no Photo objects stored for this Pin get them, otherwise continue
         let count = (fetchedResultsController.fetchedObjects?.count)! as Int
         if count < 1 {
-            print("Need to get photos!")
             getPhotos()
         } else {
             activityIndicator.stopAnimating()
